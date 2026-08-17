@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beech Leaf Disease (BLD) Multi-Year Management Portal</title>
+    <style>
+        :root {
+            --primary-dark: #1b382b;
+            --primary: #2d5a42;
+            --primary-light: #4a7c59;
+            --accent: #d97724;
+            --accent-hover: #b86018;
+            --bg-light: #f4f6f4;
+            --card-bg: #ffffff;
+            --text-dark: #1f2937;
+            --text-muted: #4b5563;
+            --border: #e5e7eb;
+            --forest-tag: #1e3a8a;
+            --arborist-tag: #065f46;
+            --landscaper-tag: #92400e;
+            --homeowner-tag: #831843;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #d1fae5;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            background: #f9fafb;
+            border: none;
+            border-bottom: 4px solid transparent;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background: #f3f4f6;
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary-dark);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Stakeholder Filter Bar */
+        .filter-bar {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .filter-label {
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .filter-chip {
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: #f3f4f6;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Calendar Grid Table */
+        .calendar-table-wrapper {
+            overflow-x: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+
+        table.calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        table.calendar-table th {
+            background: var(--primary-dark);
+            color: white;
+            padding: 1.2rem;
+            text-align: left;
+            font-size: 1.1rem;
+            width: 22.5%;
+        }
+
+        table.calendar-table th:first-child {
+            width: 10%;
+            text-align: center;
+        }
+
+        table.calendar-table td {
+            border: 1px solid var(--border);
+            padding: 1rem;
+            vertical-align: top;
+            background: white;
+        }
+
+        table.calendar-table tr:nth-child(even) td {
+            background: #fafbfa;
+        }
+
+        .year-header {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            text-align: center;
+            padding-top: 1rem;
+        }
+
+        .action-card {
+            background: #fdfdfd;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        }
+
+        .action-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .action-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: white;
+            margin-right: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge-forest { background-color: var(--forest-tag); }
+        .badge-arborist { background-color: var(--arborist-tag); }
+        .badge-landscaper { background-color: var(--landscaper-tag); }
+        .badge-homeowner { background-color: var(--homeowner-tag); }
+
+        .treatment-link {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-decoration: none;
+            margin-top: 0.2rem;
+            cursor: pointer;
+        }
+
+        .treatment-link:hover {
+            text-decoration: underline;
+            color: var(--accent-hover);
+        }
+
+        /* Treatments Tab Layout */
+        .treatment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .treatment-card {
+            background: white;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+        }
+
+        .treatment-card h3 {
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 0.5rem;
+        }
+
+        .meta-group {
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .meta-item {
+            margin-bottom: 0.3rem;
+        }
+
+        .meta-label {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .section-subtitle {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-top: 1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .product-list, .ppe-list {
+            list-style-type: square;
+            padding-left: 1.2rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .product-list a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .product-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Learning Tab Layout */
+        .info-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+        }
+
+        .info-section h2 {
+            color: var(--primary-dark);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid var(--primary-light);
+            padding-bottom: 0.4rem;
+        }
+
+        .info-section p {
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .two-col-grid { grid-template-columns: 1fr; }
+            .treatment-grid { grid-template-columns: 1fr; }
+        }
+
+        .callout-box {
+            background: #f0fdf4;
+            border-left: 5px solid var(--primary-light);
+            padding: 1.2rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .callout-box h4 {
+            color: var(--primary-dark);
+            margin-bottom: 0.4rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--primary-dark);
+            color: #d1fae5;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Beech Leaf Disease (BLD) Management Portal</h1>
+        <p>A Comprehensive, Multi-Valent 5-Year Action Plan for Forest Managers, Arborists, Landscapers, and Homeowners</p>
+    </header>
+
+    <div class="container">
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('calendar-tab', this)">📅 5-Year Seasonal Calendar</button>
+            <button class="tab-btn" onclick="switchTab('treatments-tab', this)">🧪 Treatments & Protocols</button>
+            <button class="tab-btn" onclick="switchTab('learning-tab', this)">📖 Identification & Biology</button>
+        </div>
+
+        <!-- TAB 1: CALENDAR -->
+        <div id="calendar-tab" class="tab-content active">
+            
+            <div class="filter-bar">
+                <span class="filter-label">Filter Recommendations by Role:</span>
+                <span class="filter-chip active" onclick="filterRole('all', this)">All Parties</span>
+                <span class="filter-chip" onclick="filterRole('forest', this)">Forest Management</span>
+                <span class="filter-chip" onclick="filterRole('arborist', this)">Arborists</span>
+                <span class="filter-chip" onclick="filterRole('landscaper', this)">Landscapers</span>
+                <span class="filter-chip" onclick="filterRole('homeowner', this)">Homeowners</span>
+            </div>
+
+            <div class="calendar-table-wrapper">
+                <table class="calendar-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Spring (Mar – May)<br><small style="font-weight:normal; opacity:0.8;">Bud Break & Leaf Out</small></th>
+                            <th>Summer (Jun – Aug)<br><small style="font-weight:normal; opacity:0.8;">Folier Growth & Migration</small></th>
+                            <th>Autumn (Sep – Nov)<br><small style="font-weight:normal; opacity:0.8;">Bud Migration & Senescence</small></th>
+                            <th>Winter (Dec – Feb)<br><small style="font-weight:normal; opacity:0.8;">Dormancy & Planning</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- YEAR 1 -->
+                        <tr>
+                            <td class="year-header">Year 1<br><small style="font-weight:normal; color:#6b7280;">Baseline & Immediate Intervention</small></td>
+                            <td>
+                                <div class="action-card" data-roles="forest arborist landscaper homeowner">
+                                    <div class="action-title">Canopy Baseline Audit</div>
+                                    <div class="action-desc">Inspect emerging foliage against sunlight for dark interveinal banding. Flag high-value specimen trees.</div>
+                                    <div><span class="role-badge badge-forest">Forest</span><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('diag-protocol')">View Diagnostic Protocol →</span>
+                                </div>
+                                <div class="action-card" data-roles="arborist landscaper homeowner">
+                                    <div class="action-title">Spring Phosphite Soil/Bark Spray</div>
+                                    <div class="action-desc">Apply mono- and di-potassium phosphite to stimulate host phytoalexin defenses immediately after full leaf expansion.</div>
+                                    <div><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('phosphite-bark')">View Phosphite Spray Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="arborist">
+                                    <div class="action-title">Systemic Thiabendazole Injections</div>
+                                    <div class="action-desc">Inject high-value trees with Arbotect 20-S via root-flare macro-infusion for 2+ year nematode suppression.</div>
+                                    <div><span class="role-badge badge-arborist">Arborist</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('root-flare-injection')">View Injection Protocol →</span>
+                                </div>
+                                <div class="action-card" data-roles="landscaper homeowner">
+                                    <div class="action-title">Vector Mite & Aphid Knockdown</div>
+                                    <div class="action-desc">Apply insecticidal soap or biorational sprays during cool mornings to eliminate arthropod phoretic vectors.</div>
+                                    <div><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('vector-sprays')">View Vector Control Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="forest arborist landscaper homeowner">
+                                    <div class="action-title">Autumn Leaf Litter Sanitation</div>
+                                    <div class="action-desc">Rake and deep-mulch or bag fallen infested leaf litter to reduce soil-level overwintering nematode reservoirs.</div>
+                                    <div><span class="role-badge badge-forest">Forest</span><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('sanitation-protocol')">View Sanitation Protocol →</span>
+                                </div>
+                                <div class="action-card" data-roles="arborist landscaper">
+                                    <div class="action-title">Late-Season Phosphite Booster</div>
+                                    <div class="action-desc">Apply secondary phosphite drench/spray to bolster root carbohydrate storage prior to winter dormancy.</div>
+                                    <div><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('phosphite-bark')">View Phosphite Spray Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="forest arborist landscaper">
+                                    <div class="action-title">Silvicultural Understory Thinning</div>
+                                    <div class="action-desc">Thin dense understory vegetation around beeches to lower microclimate relative humidity and shorten Leaf Wetness Duration (LWD).</div>
+                                    <div><span class="role-badge badge-forest">Forest</span><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('crown-release')">View Crown Release Protocol →</span>
+                                </div>
+                                <div class="action-card" data-roles="forest arborist landscaper homeowner">
+                                    <div class="action-title">Equipment Sanitation Audit</div>
+                                    <div class="action-desc">Sterilize pruning saws, chippers, and boots with 70% isopropyl alcohol to avoid cross-stand contamination.</div>
+                                    <div><span class="role-badge badge-forest">Forest</span><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('sanitation-protocol')">View Sanitation Protocol →</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- YEAR 2 -->
+                        <tr>
+                            <td class="year-header">Year 2<br><small style="font-weight:normal; color:#6b7280;">Crown Modification & Microclimate Control</small></td>
+                            <td>
+                                <div class="action-card" data-roles="arborist landscaper homeowner">
+                                    <div class="action-title">Dormant Horticultural Oil Spray</div>
+                                    <div class="action-desc">Apply paraffinic oil before bud burst (40-60°F) to smother overwintering mite eggs and aphids on bark.</div>
+                                    <div><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('vector-sprays')">View Vector Control Protocol →</span>
+                                </div>
+                                <div class="action-card" data-roles="arborist landscaper">
+                                    <div class="action-title">Crown Raising (Phase 1)</div>
+                                    <div class="action-desc">Prune lower limbs (up to 10-15% canopy max) to remove humid avian perching zones while avoiding trunk sunscald.</div>
+                                    <div><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('crown-release')">View Crown Pruning Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="arborist landscaper homeowner">
+                                    <div class="action-title">Foliar Fluopyram Nematicide Application</div>
+                                    <div class="action-desc">Apply foliar fluopyram (Indemnify/Broadform) during peak July-August nematode migration to kill surface worms.</div>
+                                    <div><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('vector-sprays')">View Nematicide Protocol →</span>
+                                </div>
+                                <div class="action-card" data-roles="forest arborist">
+                                    <div class="action-title">Understory Brush Clearing</div>
+                                    <div class="action-desc">Maintain 15-20ft buffer around beech trunks free of dense brush to maximize solar drying of fallen moisture.</div>
+                                    <div><span class="role-badge badge-forest">Forest</span><span class="role-badge badge-arborist">Arborist</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('crown-release')">View Brush Clearing Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="forest arborist landscaper homeowner">
+                                    <div class="action-title">Leaf Collection & Compost Isolation</div>
+                                    <div class="action-desc">Ensure fallen beech leaves are isolated from clean garden beds or municipal green waste streams.</div>
+                                    <div><span class="role-badge badge-forest">Forest</span><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('sanitation-protocol')">View Sanitation Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="forest arborist">
+                                    <div class="action-title">Stand Density Assessment</div>
+                                    <div class="action-desc">Map forest canopy gaps and evaluate understory light penetration. Select candidate trees for thinning.</div>
+                                    <div><span class="role-badge badge-forest">Forest</span><span class="role-badge badge-arborist">Arborist</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('crown-release')">View Silviculture Protocol →</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- YEAR 3 -->
+                        <tr>
+                            <td class="year-header">Year 3<br><small style="font-weight:normal; color:#6b7280;">Re-Evaluation & Injection Maintenance</small></td>
+                            <td>
+                                <div class="action-card" data-roles="arborist landscaper homeowner">
+                                    <div class="action-title">Spring Phosphite Bark Application</div>
+                                    <div class="action-desc">Re-apply potassium phosphite bark spray with Pentra-Bark to sustain high host vigor and root strength.</div>
+                                    <div><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('phosphite-bark')">View Phosphite Spray Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="arborist">
+                                    <div class="action-title">Thiabendazole Re-Injection (Cycle 2)</div>
+                                    <div class="action-desc">For high-value trees treated in Year 1, re-evaluate trunk response and perform 360° root-flare injection if needed.</div>
+                                    <div><span class="role-badge badge-arborist">Arborist</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('root-flare-injection')">View Injection Protocol →</span>
+                                </div>
+                                <div class="action-card" data-roles="landscaper homeowner">
+                                    <div class="action-title">Targeted Insecticidal Soap Wash</div>
+                                    <div class="action-desc">Wash understory beech foliage during mid-summer to remove aphid honeydew and transport mites.</div>
+                                    <div><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('vector-sprays')">View Vector Spray Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="arborist landscaper homeowner">
+                                    <div class="action-title">Mycorrhizal & Organic Soil Drench</div>
+                                    <div class="action-desc">Apply beneficial root mycorrhizae and organic compost tea to bolster stress tolerance against foliar loss.</div>
+                                    <div><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('soil-health')">View Soil Health Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="arborist landscaper">
+                                    <div class="action-title">Crown Raising (Phase 2)</div>
+                                    <div class="action-desc">Carefully prune additional lower branches up to 8-10 feet clearance, keeping live canopy loss below 15%.</div>
+                                    <div><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('crown-release')">View Crown Pruning Protocol →</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- YEAR 4 -->
+                        <tr>
+                            <td class="year-header">Year 4<br><small style="font-weight:normal; color:#6b7280;">Sustained IPM & Root System Health</small></td>
+                            <td>
+                                <div class="action-card" data-roles="arborist landscaper homeowner">
+                                    <div class="action-title">Dormant Vector Spray</div>
+                                    <div class="action-desc">Apply spring dormant oil or neem extract to prevent seasonal mite and aphid outbreaks.</div>
+                                    <div><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('vector-sprays')">View Vector Spray Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="forest arborist landscaper homeowner">
+                                    <div class="action-title">Canopy Health Index Audit</div>
+                                    <div class="action-desc">Score beech trees on 1-5 scale (1=healthy, 5=severe dieback). Identify resistant individuals for conservation.</div>
+                                    <div><span class="role-badge badge-forest">Forest</span><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('diag-protocol')">View Diagnostics Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="landscaper homeowner">
+                                    <div class="action-title">Aged Hardwood Mulch Application</div>
+                                    <div class="action-desc">Maintain 2-3 inch depth of composted mulch around drip line, keeping 6 inches clear of root flares.</div>
+                                    <div><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('soil-health')">View Soil Health Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="forest arborist">
+                                    <div class="action-title">Regional Pest Monitoring Network</div>
+                                    <div class="action-desc">Share county and state BLD spread data with regional forestry services and cooperative extension units.</div>
+                                    <div><span class="role-badge badge-forest">Forest</span><span class="role-badge badge-arborist">Arborist</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('learning-tab')">View Regional Data →</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- YEAR 5 -->
+                        <tr>
+                            <td class="year-header">Year 5<br><small style="font-weight:normal; color:#6b7280;">Long-term Resilience & Resistance Scouting</small></td>
+                            <td>
+                                <div class="action-card" data-roles="arborist landscaper homeowner">
+                                    <div class="action-title">Phosphite Vigor Maintenance</div>
+                                    <div class="action-desc">Apply spring phosphite trunk spray for ongoing systemic stimulation of defense enzymes.</div>
+                                    <div><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('phosphite-bark')">View Phosphite Spray Protocol →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="forest arborist">
+                                    <div class="action-title">Resistant Genetic Scouting</div>
+                                    <div class="action-desc">Identify clean, symptom-free beech trees inside heavily infested forest stands for seed collection and propagation.</div>
+                                    <div><span class="role-badge badge-forest">Forest</span><span class="role-badge badge-arborist">Arborist</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('diag-protocol')">View Genetics & Research →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="forest arborist landscaper homeowner">
+                                    <div class="action-title">5-Year Program Evaluation</div>
+                                    <div class="action-desc">Compare Year 1 canopy photography with Year 5 foliage density. Adjust treatment frequencies for next 5-year cycle.</div>
+                                    <div><span class="role-badge badge-forest">Forest</span><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('diag-protocol')">View Evaluation Guidelines →</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-card" data-roles="forest arborist landscaper homeowner">
+                                    <div class="action-title">Long-term IPM Plan Refinement</div>
+                                    <div class="action-desc">Transition low-risk trees to bi-annual maintenance while keeping high-value specimens on 3-year injection cycles.</div>
+                                    <div><span class="role-badge badge-forest">Forest</span><span class="role-badge badge-arborist">Arborist</span><span class="role-badge badge-landscaper">Landscaper</span><span class="role-badge badge-homeowner">Homeowner</span></div>
+                                    <span class="treatment-link" onclick="goToTreatment('root-flare-injection')">View Maintenance Protocols →</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 2: TREATMENTS -->
+        <div id="treatments-tab" class="tab-content">
+            <h2 style="color: var(--primary-dark); margin-bottom: 1.5rem;">Detailed Treatment Protocols & Chemical Guidelines</h2>
+            
+            <div class="treatment-grid">
+
+                <!-- Protocol 1 -->
+                <div class="treatment-card" id="root-flare-injection">
+                    <h3>1. Systemic Root-Flare Injection (Thiabendazole)</h3>
+                    <div class="meta-group">
+                        <div class="meta-item"><span class="meta-label">Best Timing Window:</span> Late Spring to Early Summer (during active transpiration after full leaf expansion).</div>
+                        <div class="meta-item"><span class="meta-label">Target Audience:</span> Commercial Arborists, Certified Pesticide Applicators.</div>
+                        <div class="meta-item"><span class="meta-label">Application Cycle:</span> Every 2 to 3 years per tree.</div>
+                    </div>
+                    <p>Macro-infusion of thiabendazole into the root flare delivers systemic nematicidal active ingredients throughout the xylem to leaf mesophyll tissues. Provides 2+ years of foliage protection and prevents overwintering nematode build-up inside developing buds.</p>
+                    
+                    <div class="section-subtitle">Recommended Products:</div>
+                    <ul class="product-list">
+                        <li><a href="https://www.google.com/search?q=Arbotect+20-S+fungicide" target="_blank">Arbotect 20-S (Thiabendazole hypophosphite)</a></li>
+                        <li>Macro-infusion harness & pressurized injection tee system</li>
+                        <li>High-speed 15/64" drill bits for clean root-flare tap holes</li>
+                    </ul>
+
+                    <div class="section-subtitle">Recommended Personal Protective Equipment (PPE):</div>
+                    <ul class="ppe-list">
+                        <li>Chemical-resistant nitrile/neoprene gloves (14 mil minimum)</li>
+                        <li>ANSI Z87.1 approved splash goggles & face shield</li>
+                        <li>Long-sleeved shirt, chemical apron, and long pants</li>
+                        <li>Chemical-resistant rubber boots</li>
+                    </ul>
+                </div>
+
+                <!-- Protocol 2 -->
+                <div class="treatment-card" id="phosphite-bark">
+                    <h3>2. Systemic Bark & Soil Phosphite Spray</h3>
+                    <div class="meta-group">
+                        <div class="meta-item"><span class="meta-label">Best Timing Window:</span> Spring (post-leaf out) and Early Autumn (September).</div>
+                        <div class="meta-item"><span class="meta-label">Target Audience:</span> Arborists, Landscapers, Homeowners.</div>
+                        <div class="meta-item"><span class="meta-label">Application Cycle:</span> 2 times per year (Spring & Autumn).</div>
+                    </div>
+                    <p>Mono- and di-potassium salts of phosphorous acid act as host defense stimulators (phytoalexin inducers) rather than direct contact nematicides. Bark application combined with a organosilicone surfactant allows rapid penetration into the cambium layer.</p>
+
+                    <div class="section-subtitle">Recommended Products:</div>
+                    <ul class="product-list">
+                        <li><a href="https://www.google.com/search?q=Agri-Fos+systemic+fungicide" target="_blank">Agri-Fos Systemic Fungicide / Reliant Phosphite</a></li>
+                        <li><a href="https://www.google.com/search?q=Pentra-Bark+penetrating+surfactant" target="_blank">Pentra-Bark Bark Penetrating Surfactant</a></li>
+                        <li>Backpack sprayer with brass adjustable cone nozzle</li>
+                    </ul>
+
+                    <div class="section-subtitle">Recommended Personal Protective Equipment (PPE):</div>
+                    <ul class="ppe-list">
+                        <li>NIOSH-approved N95 or P100 particulate respirator</li>
+                        <li>Safety glasses with side shields</li>
+                        <li>Nitrile work gloves</li>
+                        <li>Water-resistant coveralls</li>
+                    </ul>
+                </div>
+
+                <!-- Protocol 3 -->
+                <div class="treatment-card" id="vector-sprays">
+                    <h3>3. Vector Control & Nematicide Sprays</h3>
+                    <div class="meta-group">
+                        <div class="meta-item"><span class="meta-label">Best Timing Window:</span> Dormant season (Mar) for oils; July–August for foliar sprays.</div>
+                        <div class="meta-item"><span class="meta-label">Target Audience:</span> Arborists, Landscapers, Homeowners.</div>
+                        <div class="meta-item"><span class="meta-label">Application Cycle:</span> 1-2 treatments per growing season.</div>
+                    </div>
+                    <p>Foliar fluopyram acts as a potent nematicide against nematodes crawling on wet leaf surfaces during late-summer bud migration. Early spring horticultural oils and insecticidal soaps knock down Eriophyid mites and aphids that transport nematodes between trees.</p>
+
+                    <div class="section-subtitle">Recommended Products:</div>
+                    <ul class="product-list">
+                        <li><a href="https://www.google.com/search?q=Bonide+All+Seasons+Horticultural+Spray+Oil" target="_blank">Bonide All Seasons Horticultural Spray Oil</a></li>
+                        <li><a href="https://www.google.com/search?q=Safer+Insecticidal+Soap+Spray" target="_blank">Safer Insecticidal Soap Spray</a></li>
+                        <li><a href="https://www.google.com/search?q=Bonide+Captain+Jacks+Neem+Max" target="_blank">Bonide Captain Jack's Neem Max / Spinosad Soap</a></li>
+                        <li><a href="https://www.google.com/search?q=Indemnify+fluopyram+nematicide" target="_blank">Indemnify / Broadform (Fluopyram Nematicide)</a></li>
+                    </ul>
+
+                    <div class="section-subtitle">Recommended Personal Protective Equipment (PPE):</div>
+                    <ul class="ppe-list">
+                        <li>Protective eyewear / splash goggles</li>
+                        <li>Chemical-resistant gloves</li>
+                        <li>Long-sleeved shirt, pants, and closed-toe shoes</li>
+                    </ul>
+                </div>
+
+                <!-- Protocol 4 -->
+                <div class="treatment-card" id="crown-release">
+                    <h3>4. Silvicultural Crown Release & Crown Raising</h3>
+                    <div class="meta-group">
+                        <div class="meta-item"><span class="meta-label">Best Timing Window:</span> Late Winter / Early Spring (Dormant Pruning).</div>
+                        <div class="meta-item"><span class="meta-label">Target Audience:</span> Forest Managers, Certified Arborists, Landscapers.</div>
+                        <div class="meta-item"><span class="meta-label">Application Cycle:</span> Gradual annual adjustments over 3-5 years.</div>
+                    </div>
+                    <p>Pruning lower branches up to 8–12 feet removes the damp understory perching zone for birds and mammals, disrupting animal vector phoresy. Thinning competing understory brush accelerates wind movement and leaf drying, cutting Leaf Wetness Duration (LWD). Caution: Remove no more than 15-20% live canopy per year to prevent trunk sunscald on thin beech bark.</p>
+
+                    <div class="section-subtitle">Recommended Tools & Products:</div>
+                    <ul class="product-list">
+                        <li>Professional telescoping pole pruner & bypass secateurs</li>
+                        <li>70% Isopropyl alcohol or 10% bleach solution (for tool sanitation between cuts)</li>
+                        <li>Arborist tree climbing harness & safety lines</li>
+                    </ul>
+
+                    <div class="section-subtitle">Recommended Personal Protective Equipment (PPE):</div>
+                    <ul class="ppe-list">
+                        <li>Arborist hard hat with visor or safety glasses</li>
+                        <li>Chainsaw chaps / cut-resistant trousers</li>
+                        <li>Cut-resistant leather work gloves</li>
+                        <li>Steel-toe or composite-toe climbing boots with ankle support</li>
+                    </ul>
+                </div>
+
+                <!-- Protocol 5 -->
+                <div class="treatment-card" id="sanitation-protocol">
+                    <h3>5. Leaf Litter Sanitation & Equipment Hygiene</h3>
+                    <div class="meta-group">
+                        <div class="meta-item"><span class="meta-label">Best Timing Window:</span> Autumn Leaf Fall & Year-Round between sites.</div>
+                        <div class="meta-item"><span class="meta-label">Target Audience:</span> All Parties (Forestry, Arborists, Landscapers, Homeowners).</div>
+                        <div class="meta-item"><span class="meta-label">Application Cycle:</span> Ongoing during active landscaping and logging.</div>
+                    </div>
+                    <p>Fallen infested leaves harbor viable nematodes throughout late autumn and early winter. Raking, deep composting (>140°F), or bagging leaf waste prevents soil-surface re-infection. Sanitizing pruning tools, wood chippers, and footwear eliminates mechanical spread across properties.</p>
+
+                    <div class="section-subtitle">Recommended Products:</div>
+                    <ul class="product-list">
+                        <li>70% Isopropyl alcohol disinfectant spray bottle</li>
+                        <li>Heavy-duty 42-gallon lawn & leaf disposal bags</li>
+                        <li>Commercial leaf vacuum / shredder</li>
+                    </ul>
+
+                    <div class="section-subtitle">Recommended Personal Protective Equipment (PPE):</div>
+                    <ul class="ppe-list">
+                        <li>Dust mask (N95) during leaf vacuuming/raking</li>
+                        <li>Heavy-duty canvas or leather garden gloves</li>
+                        <li>Work boots</li>
+                    </ul>
+                </div>
+
+                <!-- Protocol 6 -->
+                <div class="treatment-card" id="soil-health">
+                    <h3>6. Root Zone Health & Mycorrhizal Augmentation</h3>
+                    <div class="meta-group">
+                        <div class="meta-item"><span class="meta-label">Best Timing Window:</span> Spring & Early Autumn.</div>
+                        <div class="meta-item"><span class="meta-label">Target Audience:</span> Landscapers, Arborists, Homeowners.</div>
+                        <div class="meta-item"><span class="meta-label">Application Cycle:</span> Annual application.</div>
+                    </div>
+                    <p>Enhancing soil biology compensates for canopy leaf loss. Applying ectomycorrhizal fungi inoculants and maintaining a 2-3 inch organic composted hardwood mulch layer retains soil moisture, tempers summer soil heat, and supports root regeneration.</p>
+
+                    <div class="section-subtitle">Recommended Products:</div>
+                    <ul class="product-list">
+                        <li><a href="https://www.google.com/search?q=Ectomycorrhizal+fungal+inoculant" target="_blank">Ectomycorrhizal Tree Inoculant Powder/Liquid</a></li>
+                        <li>Aged dark hardwood organic mulch</li>
+                    </ul>
+
+                    <div class="section-subtitle">Recommended Personal Protective Equipment (PPE):</div>
+                    <ul class="ppe-list">
+                        <li>Standard work gloves and dust mask during bulk mulch application</li>
+                    </ul>
+                </div>
+
+                <!-- Protocol 7 -->
+                <div class="treatment-card" id="diag-protocol">
+                    <h3>7. Diagnostic Field Assessment & Scoring</h3>
+                    <div class="meta-group">
+                        <div class="meta-item"><span class="meta-label">Best Timing Window:</span> June through August (Full Leaf Canopy).</div>
+                        <div class="meta-item"><span class="meta-label">Target Audience:</span> Forest Managers, Arborists, Homeowners.</div>
+                    </div>
+                    <p>Hold foliage up to direct sunlight. Stage 1 presents as dark green to black interveinal banding. Stage 2 shows puckering, thickening, and chlorosis. Stage 3 presents severe leaf distortion, early leaf drop, and canopy dieback.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 3: LEARNING & IDENTIFICATION -->
+        <div id="learning-tab" class="tab-content">
+            
+            <div class="info-section">
+                <h2>1. About Beech Leaf Disease & The Causal Agent</h2>
+                <p>Beech Leaf Disease (BLD) is an emergent forest health crisis threatening North American American beech (<em>Fagus grandifolia</em>), European beech (<em>Fagus sylvatica</em>), and Oriental beech (<em>Fagus orientalis</em>). First discovered in Lake County, Ohio in 2012, BLD has rapidly expanded across the Northeastern United States and Canada.</p>
+                
+                <div class="two-col-grid">
+                    <div>
+                        <h3 style="color:var(--primary-dark); margin-bottom:0.5rem;">Pathogen Profile: <em>Litylenchus crenatae</em> subsp. <em>mccannii</em></h3>
+                        <p>The causative agent is a microscopic foliar nematode (roundworm). Unlike soil-dwelling root nematodes, this species specifically colonizes leaf tissue and buds.</p>
+                        <ul style="padding-left:1.2rem; font-size:0.95rem; color:var(--text-muted);">
+                            <li><strong>Overwintering:</strong> Adult and juvenile nematodes overwinter inside tight leaf buds.</li>
+                            <li><strong>Feeding Mechanism:</strong> Feeding triggers hyperplasia (excessive cell division) and hypertrophy (cell enlargement) in mesophyll cells, causing leaf thickening and dark interveinal banding.</li>
+                            <li><strong>Surface Migration:</strong> During late summer storms (July–September), nematodes emerge onto wet leaf surfaces and swim across water films to colonize next year's newly forming buds.</li>
+                        </ul>
+                    </div>
+                    <div class="callout-box">
+                        <h4>Microclimate & Moisture Mechanics:</h4>
+                        <p>Nematodes are aquatic organisms in micro-scale terms. They require a continuous water film—governed by <strong>Leaf Wetness Duration (LWD)</strong> and high relative humidity—to migrate across leaf surfaces.</p>
+                        <p style="margin-top:0.5rem;">This explains why understory beeches in deep shade suffer significantly higher disease severity than sun-exposed mature canopy trees: high humidity and low UV exposure prolong LWD, giving nematodes ample time to travel and invade buds.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h2>2. Disease Symptoms & Visual Diagnostic Timeline</h2>
+                <div class="two-col-grid">
+                    <div style="background:#f9fafb; padding:1.2rem; border-radius:8px; border:1px solid var(--border);">
+                        <h3 style="color:var(--primary); font-size:1.1rem; margin-bottom:0.5rem;">Early Stage Symptoms (Year 1)</h3>
+                        <ul style="padding-left:1.2rem; font-size:0.9rem;">
+                            <li>Dark green, leathery, interveinal bands between leaf veins.</li>
+                            <li>Banding is most easily identified by standing under the tree and looking upward into bright sunlight.</li>
+                            <li>Affected leaf tissue becomes thicker and leathery compared to normal translucent green leaves.</li>
+                        </ul>
+                    </div>
+                    <div style="background:#fff7ed; padding:1.2rem; border-radius:8px; border:1px solid #fed7aa;">
+                        <h3 style="color:var(--accent); font-size:1.1rem; margin-bottom:0.5rem;">Advanced Symptoms & Mortality (Years 2–6)</h3>
+                        <ul style="padding-left:1.2rem; font-size:0.9rem;">
+                            <li>Leaves curl, pucker, turn yellow/brown, and drop prematurely in mid-summer.</li>
+                            <li>Bud development aborts, leading to heavy branch tip dieback.</li>
+                            <li>Understory saplings often die within 2 to 5 years; mature canopy trees suffer total decline within 6 to 10 years.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h2>3. Vector Transmission & Interconnection Network</h2>
+                <p>While nematodes swim short distances across wet leaf surfaces, long-distance and tree-to-tree transport relies on multiple physical and biological vectors:</p>
+                
+                <table style="width:100%; border-collapse:collapse; margin-top:1rem;" class="calendar-table">
+                    <thead>
+                        <tr>
+                            <th style="width:25%;">Vector Type</th>
+                            <th style="width:40%;">Transmission Mechanism</th>
+                            <th style="width:35%;">Inhibition Strategy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Avian & Mammalian Phoresy</strong></td>
+                            <td>Songbirds and squirrels perching in damp understory foliage pick up surface nematodes on feathers and paws, carrying them to neighboring crowns.</td>
+                            <td><strong>Crown Raising:</strong> Prune lower limbs up to 8-12ft to remove low perching platforms in humid understory zones.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Arthropod Transport</strong></td>
+                            <td>Eriophyid mites (<em>Acalitus fagerinea</em>) and aphids crawling over leaf surfaces physically carry microscopic nematodes across canopy gaps.</td>
+                            <td><strong>Targeted Biorationals:</strong> Apply spring dormant oils and insecticidal soaps to suppress vector mite/aphid populations.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wind-Driven Rain & Storms</strong></td>
+                            <td>Heavy thunderstorm downpours create aerosolized water droplets carrying nematodes across forest canopy gaps.</td>
+                            <td><strong>Windbreaks & Spacing:</strong> Maintain evergreen windbreaks and thin dense stands to accelerate canopy drying.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Human & Equipment Contamination</strong></td>
+                            <td>Pruning tools, boots, ladders, and wood chippers transport infested leaf debris between properties and clean stands.</td>
+                            <td><strong>Sanitation Protocol:</strong> Disinfect gear with 70% isopropyl alcohol between work locations.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-section">
+                <h2>4. Geographic Distribution & Spread Analysis</h2>
+                <p>Since its 2012 discovery in Ohio, BLD has expanded rapidly across 12+ states and provinces, including Ohio, Pennsylvania, New York, Connecticut, Massachusetts, Rhode Island, New Jersey, Maine, Michigan, Virginia, West Virginia, and Ontario, Canada.</p>
+                
+                <div class="callout-box" style="background:#eff6ff; border-left-color:#2563eb;">
+                    <h4 style="color:#1e40af;">Regional Forest Impact & Conservation Goals:</h4>
+                    <p>American beech is a keystone climax species in Eastern hardwood forests, providing critical hard mast (beech nuts) for black bears, wild turkeys, blue jays, and small mammals. Protecting specimen trees while identifying naturally resistant genetic individuals in infected wild stands is crucial for preserving eastern forest ecosystems.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <footer>
+        <p>Beech Leaf Disease Integrated Management Guidelines &bull; Developed for Civic & Forestry Stewardship</p>
+        <p style="margin-top:0.5rem;"><small>Always consult local university cooperative extension offices and certified arborists prior to applying chemical pesticides.</small></p>
+    </footer>
+
+    <script>
+        function switchTab(tabId, btnElement) {
+            // Hide all tab content
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Deactivate all buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+
+            // Activate clicked button
+            if (btnElement) {
+                btnElement.classList.add('active');
+            }
+        }
+
+        function filterRole(role, chipElement) {
+            // Highlight chip
+            const chips = document.querySelectorAll('.filter-chip');
+            chips.forEach(c => c.classList.remove('active'));
+            chipElement.classList.add('active');
+
+            // Filter cards
+            const cards = document.querySelectorAll('.action-card');
+            cards.forEach(card => {
+                const cardRoles = card.getAttribute('data-roles');
+                if (role === 'all' || (cardRoles && cardRoles.includes(role))) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function goToTreatment(treatmentId) {
+            // Switch to treatments tab
+            const treatmentTabBtn = document.querySelectorAll('.tab-btn')[1];
+            switchTab('treatments-tab', treatmentTabBtn);
+
+            // Scroll to specific treatment card
+            setTimeout(() => {
+                const element = document.getElementById(treatmentId);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    element.style.outline = '3px solid #d97724';
+                    setTimeout(() => {
+                        element.style.outline = 'none';
+                    }, 2500);
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>
